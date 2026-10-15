@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Component {
+  id            String   @id @default(cuid())
+  name          String
+  manufacturer  String
+  mpn           String
+  normalizedMpn String
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  listings      SupplierListing[]
+  alerts        Alert[]
+  bomItems      BomItem[]
+
+  @@unique([manufacturer, mpn])
+  @@index([mpn])
+  @@index([normalizedMpn])
+}
+
+model SupplierListing {
+  id                 String    @id @default(cuid())
+  componentId        String
+  supplierName       String
+  productUrl         String
+  price              Float?
+  currency           String    @default("USD")
+  stockStatus        String    @default("UNKNOWN") // IN_STOCK, OUT_OF_STOCK, LIMITED_STOCK, BACKORDER, UNKNOWN
+  stockQuantity      Int?
+  leadTime           String?
+  specifications     String?   // JSON string
+  verificationStatus String    @default("UNVERIFIED") // VERIFIED, UNVERIFIED, POTENTIAL_MATCH, NEEDS_VERIFICATION
+  lastCheckedAt      DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  component          Component  @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  snapshots          Snapshot[]
+  alerts             Alert[]
+
+  @@unique([componentId, supplierName, productUrl])
+  @@index([componentId])
+  @@index([supplierName])
+}
+
+model Snapshot {
+  id                String          @id @default(cuid())
+  supplierListingId String
+  price             Float?
+  currency          String          @default("USD")
+  stockStatus       String          @default("UNKNOWN")
+  stockQuantity     Int?
+  leadTime          String?
+  packageQuantity   Int             @default(1)
+  capturedAt        DateTime        @default(now())
+
+  supplierListing   SupplierListing @relation(fields: [supplierListingId], references: [id], onDelete: Cascade)
+
+  @@index([supplierListingId])
+  @@index([capturedAt])
+}
+
+model Alert {
+  id                String           @id @default(cuid())
+  componentId       String
+  supplierListingId String?
+  type              String           // PRICE_INCREASE, PRICE_DECREASE, OUT_OF_STOCK, IN_STOCK, AVAILABILITY_CHANGE
+  message           String
+  previousValue     String?
+  currentValue      String?
+  readAt            DateTime?
+  createdAt         DateTime         @default(now())
+
+  component         Component        @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  supplierListing   SupplierListing? @relation(fields: [supplierListingId], references: [id], onDelete: SetNull)
+
+  @@index([componentId])
+  @@index([supplierListingId])
+  @@index([readAt])
+  @@index([createdAt])
+}
+
+model Bom {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  items       BomItem[]
+}
+
+model BomItem {
+  id               String    @id @default(cuid())
+  bomId            String
+  componentId      String
+  requiredQuantity Int       @default(1)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  bom              Bom       @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  component        Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@unique([bomId, componentId])
+  @@index([bomId])
+  @@index([componentId])
+}

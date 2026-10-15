@@ -1,0 +1,26 @@
+{
+  "name": "partpulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PartPulse — AI Component Supply Tracker for hardware engineers, robotics teams, and electronics students",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "test": "cd server && npm test",
+    "prisma:generate": "cd server && npm run prisma:generate",
+    "prisma:push": "cd server && npm run prisma:push"
+  },
+  "keywords": [
+    "partpulse",
+    "electronics",
+    "tinyfish",
+    "component-tracker",
+    "supply-chain",
+    "robotics"
+  ],
+  "author": "PartPulse Engineering",
+  "license": "MIT"
+}
