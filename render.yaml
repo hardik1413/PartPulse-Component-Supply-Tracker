@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: partpulse-backend
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./dev.db
+      - key: TINYFISH_API_KEY
+        sync: false

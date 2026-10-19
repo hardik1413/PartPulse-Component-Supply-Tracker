@@ -189,6 +189,26 @@ npm run build
 
 ---
 
+## Deploying Backend to Render (Public Cloud)
+
+1. **Push your code to GitHub** (Your `TINYFISH_API_KEY` in `.env` is protected by `.gitignore`).
+2. Log into [Render](https://render.com/) and click **New +** → **Web Service** (or **Blueprint**).
+3. Connect your repository. Render automatically reads `render.yaml` or you can enter:
+   - **Root Directory**: `server`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm run start`
+   - **Health Check Path**: `/api/health`
+4. In **Environment Variables**, set:
+   - `NODE_ENV`: `production`
+   - `DATABASE_URL`: `file:./dev.db` (or `file:/var/data/partpulse.db` if using a Persistent Disk)
+   - `TINYFISH_API_KEY`: *(paste your TinyFish API key securely here)*
+5. Click **Deploy Web Service**. Render provides a public HTTPS URL (e.g., `https://partpulse-backend.onrender.com`).
+6. In your frontend hosting or `.env.production`, set:
+   `VITE_API_URL=https://partpulse-backend.onrender.com`
+
+---
+
 ## Troubleshooting & FAQ
 
 ### `401 Unauthorized: API_KEY_MISSING`

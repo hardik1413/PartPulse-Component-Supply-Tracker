@@ -9,7 +9,8 @@ import { bomsRouter } from './routes/boms';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
+const HOST = '0.0.0.0';
 
 // Middleware
 app.use(
@@ -51,10 +52,10 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, HOST, () => {
   console.log(`===============================================`);
-  console.log(`🚀 PartPulse Server running on http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🚀 PartPulse Server running on http://${HOST}:${PORT}`);
+  console.log(`📊 Health check: http://${HOST}:${PORT}/api/health`);
   console.log(`===============================================`);
 });
 
